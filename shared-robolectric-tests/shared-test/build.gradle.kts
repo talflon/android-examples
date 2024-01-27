@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "net.getzit.android"
+    namespace = "net.getzit.android.sharedtest"
     compileSdk = 34
 
     defaultConfig {
