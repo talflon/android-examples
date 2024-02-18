@@ -4,34 +4,35 @@ import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasClickAction
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.performClick
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
 @RunWith(AndroidJUnit4::class)
 class MainActivityTestExplicit {
-    @get:Rule(order = 0)
-    val composeRule = createComposeRule()
+    @get:Rule
+    val composeRule = createEmptyComposeRule()
 
-    @get:Rule(order = 1)
-    val activityRule = ActivityScenarioRule(MainActivity::class.java)
+    private val context: Context
+        get() = ApplicationProvider.getApplicationContext<MainActivity>()
 
-    val context: Context
-        get() = getApplicationContext<MainActivity>()
+    protected fun getString(@StringRes id: Int) = context.getString(id)
 
-    private fun getString(@StringRes id: Int) = context.getString(id)
+    protected inline fun inActivity(f: (ActivityScenario<MainActivity>) -> Unit): Unit =
+        ActivityScenario.launch(MainActivity::class.java).use(f)
 
     @Test
     fun testButton() = with(composeRule) {
-        onNode(hasClickAction()).assertTextEquals(getString(R.string.test))
-        onNode(hasClickAction()).performClick()
-        assertEquals(2, 1 + 1)
+        inActivity {
+            onNode(hasClickAction()).assertTextEquals(getString(R.string.test))
+            onNode(hasClickAction()).performClick()
+            assertEquals(2, 1 + 1)
+        }
     }
 }
